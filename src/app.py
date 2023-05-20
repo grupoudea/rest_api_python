@@ -1,9 +1,11 @@
 from flask import Flask
-
+from flask_cors import CORS
 # Routes
 from routes import model_route 
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 
 def page_not_found(error):
     return "<h1>Not found</h1>", 404
