@@ -1,7 +1,8 @@
 my_env/
 scripts/
 
-.my_env
+.env
 .gitignore
 README.md
 Dockerfile
+sentiment_analysis_RNA_LSTM/

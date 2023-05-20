@@ -12,7 +12,7 @@ main = Blueprint('movie_blueprint', __name__)
 def predict():
     
     #cargar modelo
-    loaded_model = keras.models.load_model("../utils/exported_model.h5")
+    loaded_model = keras.models.load_model("src/static/exported_model.h5")
     
     resultado = "neutral"
     twt = [""" Come meet one of the beautiful gods of gambling. """]
