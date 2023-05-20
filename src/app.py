@@ -8,7 +8,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 def page_not_found(error):
-    return "<h1>Not found</h1>", 404
+    return "<h1>Not found! You are crazy!</h1>", 404
 
 if __name__ == '__main__':
     
