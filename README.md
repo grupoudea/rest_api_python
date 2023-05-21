@@ -27,11 +27,126 @@ Se realiza una limpieza de los datos para eliminar los ruidos que podrían conte
 
 # 3. Construcción y arquitectura del modelo
 
+Se tiene un modelo de red neuronal (LSTM) para analisis de sentimientos.
+
+La construcción del modelo es la siguiente:
+
+```python
+embed_dim = 128
+lstm_out = 196
+
+model = Sequential()
+model.add(Embedding(max_fatures, embed_dim,input_length = X.shape[1]))
+model.add(SpatialDropout1D(0.4))
+model.add(LSTM(lstm_out, dropout=0.2, recurrent_dropout=0.2))
+model.add(Dense(3,activation='softmax'))
+model.compile(loss = 'categorical_crossentropy', optimizer='adam',metrics = ['accuracy'])
+print(model.summary())
+```
+
+En las siguientes línea se tiene un dimensión de embeddings (dimesión vectorial en las que se representan las palabras del modelo) de 128 y el número de unidades LSTM = 196.
+
+```python
+embed_dim = 128
+lstm_out = 196
+```
+
+Se crea un modelo secuencial con una capa de embedding, esta capa mapea los indices enteros de las palabras a vectores de embeddings de tamaño *embed_dim*. La variable *max_fatures* representa el tamaño del vocabulario (el número maximo de palabras distintas a considerar).
+
+Se agrega una capa de dropout espacial de 1D **(SpatialDropout1D)**. Esto aplica a las salidas de la capa embedding, lo que ayuda a evitar el sobreajueste, ya que apaga aleatoriamente algunas unidades durante el entrenamiento. 
+
+```python
+model = Sequential()
+model.add(Embedding(max_fatures, embed_dim,input_length = X.shape[1]))
+model.add(SpatialDropout1D(0.4))
+```
+Se agrega la capa LSTM al modelo con *lstm_uot* unidades LSTM. EL dropout y recurrente dropout, de acuerdo a la documentación en keras consideran valores entre 0 y 1 y especifican la tasa dropout para las conexiones entre las celdas LSTM y para las conexiones recurrentes.
+
+Finalmente para la capa de salida, se agrega una capa densa con tres unidades y una función de activación softmax. Esta capa representa las probabilidades de pertenercer a cada unas de las 3 clases de sentimiento (positive, negative, neutral).
+
+El modelo se compila con una función de pérdida categorical_crossentropy, el optimizador adam y las metricas a utilizar durante el entrenamiento, precisión. 
+
+En la ultima linea, se imprime el resumen del modelo, donde se muestra la arquitectura y el número de parámetros entrenables. 
+
+```python
+model.add(Dense(3,activation='softmax'))
+model.compile(loss = 'categorical_crossentropy', optimizer='adam',metrics = ['accuracy'])
+print(model.summary())
+```
+## arquitectura del modelo
+
+![alt text](sentiment_analysis_RNA_LSTM/lstm-rnn.png)
+
+1. Capa embedding: esta capa convierte los indices de las palabras en vectores de embeddings de tamaño *embed_dim*. Se usa la variable *max_fatures* que representa el tamaño del vocabulario (el número maximo de palabras distintas a considerar).
+
+2. Capa dropout: Esta capa aplica el dropout a las salidas de la capa de embedding. Su función es regularizar y evitar el sobreajuste.
+
+3. Capa LSTM: Esta capa está compuesta por un total 196 unidades LSTM (lstm_out) y es responsable de procesar y aprender las sencuencias de entrada para capturar patrones temporales en los datos.
+
+4. Capa densa: Es la capa de salida, consta de 3 neuronas. Esta capa produce salidas clasificadas apoyandose en en las capas anteriores. 
+
+
+
 # 4. Entrenamiento del modelo
+
+```python
+Y = dataset_train[:, 0]
+Y1 = pd.get_dummies(dataset_train[:, 0]).values
+
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y1, test_size = 0.33, random_state = 42)
+
+inicio = datetime.datetime.now()
+print('Inicia: ', inicio)
+
+batch_size = 35
+model.fit(X_train, Y_train, epochs = 15, batch_size=batch_size, verbose = 2)
+
+fin  = datetime.datetime.now()
+print('Termina: ', fin)
+print('Duracion: ', fin - inicio)
+```
+
+Cómo primer paso se realiza una obtención de los valores de la variable de salida (las etiquetas). Se hace uso de la función get_dummies par obtener los valores como one-hot-enconding. 
+
+Para entrar el modelo se opta por usar la función **train_test_split** que permite dividir de manera aleatoria un conjunto de datos en conjuntos de entrenamiento y prueba. En este caso se toma el 33% del conjunto de datos que se usará como conjunto de pruebas. 
+
+```python
+model.fit(X_train, Y_train, epochs = 15, batch_size=batch_size, verbose = 2)
+```
+
+Con la línea anterior se entrena el modelo haciendo uso de 15 epocas y un batch size de 35, lo que significa que se actualizan los pesos con mayor frecuencia. 
+
+```python
+validation_size = 1500
+
+X_validate = X_test[-validation_size:]
+Y_validate = Y_test[-validation_size:]
+X_test = X_test[:-validation_size]
+Y_test = Y_test[:-validation_size]
+score,acc = model.evaluate(X_test, Y_test, verbose = 2, batch_size = batch_size)
+print("score: %.2f" % (score))
+print("acc: %.2f" % (acc))
+```
+
+Con las líneas anteriores se evalua el modelo donde al final se obtiene el puntaje y la precisión del mismo. Para evaluarlo se toman y remueven 1500 muetras del conjunto de pruebas y se le pasan a la función **evaluate**. 
+La puntuación o score obtenida está entre **0.5 y 0.6**, mientras que la precisión está entre **0.82 y 0.87** en diferentes configuraciones que se la realizaron a la construcción del modelo.
+
 
 # 5. Exportación del modelo
 
-# 6. Predicción
+# 6. Predicción usando REST API
+
+Para usar el modelo y realizar prediciones con algunos comentarios de twitter, se expone el modelo a través de una REST API construida en Python usando Flask.
+
+Está API es sencilla y cumple con ciertas tareas para lograr usar el modelo exportado como .h5. Algunas de estpas tareas:
+
+- Limpiar el comentario que se envía desde el frontend
+- Tokenizar el comentario para poder enviar al modelo dicha representación
+- Cargar el modelo exportado en .h5 usando keras.
+- Validar resultado del modelo
+- retornar objeto con la información necesaria para determinar el sentimiento (clasificación) en el frontend
+
+
 
 
 ## Métricas
