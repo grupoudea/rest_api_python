@@ -32,7 +32,12 @@ def predict():
     # Procesar el texto
     resultado = "NEUTRAL"
     twt = [text]
-    
+
+    twt = np.char.lower(twt)
+    twt = np.char.replace(twt, '[^a-zA-Z0-9\s]', '')
+    twt = np.char.replace(twt, '@', '')
+    print('twt = ',twt)
+
     max_features = 2000
     tokenizer = Tokenizer(num_words=max_features, split=' ')
     tokenizer.fit_on_texts(twt)
