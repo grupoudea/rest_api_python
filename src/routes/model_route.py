@@ -7,6 +7,8 @@ from dataclasses import asdict
 
 from models.sentiment_response import SentimentResponse
 
+import pickle
+
 main = Blueprint('movie_blueprint', __name__)
 
 
@@ -22,6 +24,9 @@ def predict():
     # Cargar el modelo
     loaded_model = keras.models.load_model("src/static/exported_model.h5")
 
+    with open('src/static/tokenizer.pickle', 'rb') as handle:
+        tokenizer = pickle.load(handle)
+
     # Obtener el texto de la petición
     text = request.json.get('text')
 
@@ -33,20 +38,20 @@ def predict():
     resultado = "NEUTRAL"
     twt = [text]
 
+    # Limpiar los datos
     twt = np.char.lower(twt)
     twt = np.char.replace(twt, '[^a-zA-Z0-9\s]', '')
     twt = np.char.replace(twt, '@', '')
     print('twt = ',twt)
 
-    max_features = 2000
-    tokenizer = Tokenizer(num_words=max_features, split=' ')
-    tokenizer.fit_on_texts(twt)
-    twt = tokenizer.texts_to_sequences(twt)
-    twt = pad_sequences(twt, maxlen=166, dtype='int32', value=0)
-    print("twt ps",twt)
+    # Tokenizer
+    tokens = tokenizer.texts_to_sequences(twt)
+    print(tokens)   
+    tokens_padded = pad_sequences(tokens, maxlen=166)
+    print(tokens_padded)
 
     # Predecir el sentimiento
-    sentiment = loaded_model.predict(twt, batch_size=1, verbose=2)[0]
+    sentiment = loaded_model.predict(tokens_padded, batch_size=1, verbose=2)[0]
     print(sentiment)
     if np.argmax(sentiment) == 0:
         resultado = "NEGATIVE"
