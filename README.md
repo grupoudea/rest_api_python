@@ -151,8 +151,10 @@ Está API es sencilla y cumple con ciertas tareas para lograr usar el modelo exp
 
 ## Métricas
 ### Métrica F1
+Se utiliza la función `f1_score` El F1 es una métrica que combina tanto la precisión como el recall en una sola medida. Esto es práctico porque hace más fácil el poder comparar el rendimiento combinado de la precisión y el recall entre varias soluciones.
 
 ### Métrica Recall
+Se utiliza la función `recall_score` El Recall (también conocido como sensibilidad) es una métrica que mide la capacidad de un modelo para encontrar todos los ejemplos positivos en un conjunto de datos. En otras palabras, indica la proporción de ejemplos positivos que el modelo ha identificado correctamente.
 
 ### Métrica Precisión
 Se utiliza la función `accuracy_score` de la librería de Keras, esta función sirve para comparar las clases verdaderas y las clases predichas y calcula la precisión del modelo en términos de la proporción de muestras clasificadas correctamente.
