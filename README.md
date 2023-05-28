@@ -26,11 +26,9 @@ Se realiza una limpieza de los datos para eliminar los ruidos que podrían conte
 # 2. Vectorización de los datos
 Se divide el texto en unidades más pequeñas llamadas tokens, se logra representar el texto de manera numérica, lo que facilita su procesamiento y análisis para asignar un identificador numérico a cada token, de la siguiente manera:
 
-```
+```python
     tokens = tokenizer.texts_to_sequences(twt)
-    print(tokens)   
     tokens_padded = pad_sequences(tokens, maxlen=166)
-    print(tokens_padded)
 ```
  
 Este paso es fundamental ya que permite trabajar con texto de manera eficiente, al proporcionar una representación numérica, reducir la dimensionalidad y revelar información lingüística importante.
