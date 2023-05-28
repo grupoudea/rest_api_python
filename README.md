@@ -24,6 +24,16 @@ Se realiza una limpieza de los datos para eliminar los ruidos que podrían conte
  - Se normalizan los tweets para que todas las palabras sean en minúscula.
 
 # 2. Vectorización de los datos
+Se divide el texto en unidades más pequeñas llamadas tokens, se logra representar el texto de manera numérica, lo que facilita su procesamiento y análisis para asignar un identificador numérico a cada token, de la siguiente manera:
+
+```
+    tokens = tokenizer.texts_to_sequences(twt)
+    print(tokens)   
+    tokens_padded = pad_sequences(tokens, maxlen=166)
+    print(tokens_padded)
+```
+ 
+Este paso es fundamental ya que permite trabajar con texto de manera eficiente, al proporcionar una representación numérica, reducir la dimensionalidad y revelar información lingüística importante.
 
 # 3. Construcción y arquitectura del modelo
 
@@ -133,6 +143,17 @@ La puntuación o score obtenida está entre **0.5 y 0.6**, mientras que la preci
 
 
 # 5. Exportación del modelo
+Mediante la función "model.save()" que se utiliza para guardar modelos en varias bibliotecas de aprendizaje automática como TensorFlow o Keras.
+
+La función "save" toma dos argumentos principales: "ruta_guardado" y "save_format". "ruta_guardado" es la ubicación y el nombre de archivo donde se guardará el modelo. Puedes especificar la ruta completa junto con el nombre del archivo o solo el nombre del archivo si deseas guardarlo en el directorio actual.
+
+El segundo argumento, "save_format", especifica el formato en el que se guarda el modelo. En este caso, se utiliza 'h5', que es una abreviatura de Hierarchical Data Format versión 5. 
+
+Ventajas: 
+
+- Al exportar un modelo, puedes guardarlo en un archivo y utilizarlo más tarde sin tener que volver a entrenarlo desde cero.
+- Permite integrarlo fácilmente en las aplicaciones y utilizarlo para hacer predicciones en tiempo real.
+
 
 # 6. Predicción usando REST API
 
